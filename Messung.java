@@ -14,4 +14,9 @@ public class Messung
     {
         return wert;
     }
+    
+    public String getErzeugtAm()
+    {
+        return erzeugtAm;
+    }
 }

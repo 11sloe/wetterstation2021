@@ -31,6 +31,27 @@ public class Messreihe
         }
         return max;
     }
+    
+    public double min()
+   {
+       double min = messwerte.get(0).getWert();
+       for (Messung m : messwerte)
+       {
+           if (m.getWert() <  min)
+           {
+               min = m.getWert();
+            }
+        }
+        return min;
+    }
+    
+    public void ausgeben()
+    {
+        for (Messung m : messwerte)
+        {
+            System.out.println(m.getWert() + " \t " + m.getErzeugtAm());
+        }
+    }
 
    
 }

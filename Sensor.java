@@ -14,9 +14,9 @@ public class Sensor
         einheit = einheit_;
     }
     
-    public void ausgeben()
+    public String toString()
     {
-        System.out.println(titel + " ( " + einheit + " )"); 
+        return titel + " ( " + einheit + " )"; 
     }
     
     public String getId()
