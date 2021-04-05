@@ -11,7 +11,7 @@ import org.json.*;
 /**
  * Regelt den Zugriff auf die OpenSenseMap
  */
-public class OpenSenseMap
+public class OpenSenseMap implements SenseMap
 {
     private JSONObject boxDaten;
     private String senseBoxId = "5d8de1a95f3de0001a86f3fb";
@@ -55,6 +55,23 @@ public class OpenSenseMap
         String erzeugtAm = letzteMessungJSON.getString("createdAt");
         Messung messung = new Messung(wert,erzeugtAm);
         return messung;
+    }
+    
+    public ArrayList<Messung> getVieleMessungen(String sensorId)
+    {
+        ArrayList<Messung> liste = new ArrayList<Messung>();
+        String messungen = get("/boxes/" + senseBoxId + "/data/" + sensorId);
+        JSONArray messungenJSON = new JSONArray(messungen);
+        
+        for (int i = 0; i < messungenJSON.length(); i++)
+        {
+            JSONObject messungJSON = messungenJSON.getJSONObject(i);
+            Double wert = Double.parseDouble(messungJSON.getString("value"));
+            String erzeugtAm = messungJSON.getString("createdAt");
+            Messung messung = new Messung(wert,erzeugtAm);
+            liste.add(messung);
+        }
+        return liste;
     }
     
     private JSONObject holeSenseBoxDaten()

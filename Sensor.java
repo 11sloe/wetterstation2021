@@ -16,7 +16,7 @@ public class Sensor
     
     public void ausgeben()
     {
-        System.out.println(titel + " (id" + id +")"); 
+        System.out.println(titel + " ( " + einheit + " )"); 
     }
     
     public String getId()
