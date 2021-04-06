@@ -2,56 +2,71 @@ import java.util.*;
 
 public class Messreihe
 {
-   private ArrayList<Messung> messwerte;
-   
-   public Messreihe()
-   {
-       messwerte = new ArrayList<Messung>();
-   }
-   
-   public void hinzufuegen(Messung m)
-   {
-       messwerte.add(m);
-   }
-   
-   public void vieleWerteHinzufuegen(ArrayList<Messung> liste)
-   {
-       messwerte.addAll(liste);
-    }
-   
-   public double max()
-   {
-       double max = messwerte.get(0).getWert();
-       for (Messung m : messwerte)
-       {
-           if (m.getWert() > max)
-           {
-               max = m.getWert();
-            }
-        }
-        return max;
-    }
+    private String sensorId;
     
-    public double min()
-   {
-       double min = messwerte.get(0).getWert();
-       for (Messung m : messwerte)
-       {
-           if (m.getWert() <  min)
-           {
-               min = m.getWert();
-            }
-        }
-        return min;
-    }
+    private String titel;
+    private String einheit;
     
-    public void ausgeben()
+    private ArrayList<Messung> messungen;
+
+    public Messreihe(String id_, String titel_, String einheit_)
     {
-        for (Messung m : messwerte)
+        sensorId = id_;
+        titel = titel_;
+        einheit = einheit_;
+        messungen = new ArrayList<Messung>();
+    }
+    
+    public String toString()
+    {
+        return titel + " ( " + einheit + " )"; 
+    }
+    
+    public String getSensorId()
+    {
+        return sensorId;
+    }
+    
+    public String getTitel()
+    {
+        return titel;
+    }
+    
+    public String getAktWert()
+    {
+        return getAktMessung().getWert() + "";
+    }
+    
+    public void eineMessungHinzufuegen(Messung m)
+    {
+        messungen.add(0,m); // Neueste Messungen werden an der Stelle 0 eingefuegt
+    }
+    
+    public void messungenHinzufuegen(ArrayList<Messung> neueMessungen)
+    {
+        messungen.addAll(neueMessungen);
+    }
+    
+    public Messung getAktMessung()
+    {
+        int anzahl = messungen.size();
+        if (anzahl == 0)
         {
-            System.out.println(m.getWert() + " \t " + m.getErzeugtAm());
+            return new Messung(0,"kein Messwert vorhanden");
         }
+        else
+        {
+            return messungen.get(0);
+        }
+    }
+    
+    public String getMaxWert()
+    {
+        return Auswertungen.max(messungen) + "";
     }
 
-   
+    public String getMinWert()
+    {
+        return Auswertungen.min(messungen) + "";
+    }
 }

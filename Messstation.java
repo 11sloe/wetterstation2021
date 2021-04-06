@@ -1,7 +1,6 @@
 
 import java.util.ArrayList;
 
-
 /**
  * Die Klasse beschreibt eine Messstation
  * 
@@ -10,111 +9,92 @@ import java.util.ArrayList;
  */
 public class Messstation
 {
-    
+
     private String name;
     private SenseMap map;  
-    
-    private ArrayList<Sensor> sensoren;
-    
-    private Sensor temperaturSensor;
-    private Sensor luftfeuchteSensor;
-    private Sensor luftdruckSensor;
-    
-    private Messung aktTemp;
-    private Messung aktLuftfeuchte;
-    private Messung aktLuftdruck;
-    
-    private Messreihe temperaturen;  
-    
-    private boolean simulation = true;
-    
 
-    public Messstation()
+    private ArrayList<Messreihe> messreihen;
+
+
+    public Messstation(String senseBoxId)
     {
-        if (simulation)
+        if (senseBoxId.equals("sim"))
         {
             map = new SenseMapSimulation();
         }
         else
         {
-            map = new OpenSenseMap();
+            map = new OpenSenseMap(senseBoxId);
         }
-    
-        temperaturen = new Messreihe();
-        
+
         // Daten Einlesen
-        sensorenAusSenseMapEinlesen();
-        aktuelleMesswerteEinlesen();
+        basisinfosAusSenseMapEinlesen();
         messreihenEinlesen();
-        
+        aktuelleMesswerteEinlesen();   
+
     }
-    
+
     public void aktuelleMesswerteEinlesen()
     {     
-        aktTemp = map.getAktMessung(temperaturSensor.getId());
-        aktLuftfeuchte = map.getAktMessung(luftfeuchteSensor.getId());
-        aktLuftdruck = map.getAktMessung(luftdruckSensor.getId());   
-        
-        
+        for (Messreihe s: messreihen)
+        {
+            Messung m = map.getAktMessung(s.getSensorId());
+            s.eineMessungHinzufuegen(m);
+        }        
     }
-    
+
     private void messreihenEinlesen()
     {
-        temperaturen.vieleWerteHinzufuegen(map.getVieleMessungen(temperaturSensor.getId()));
+        for (Messreihe s:messreihen)
+        {
+            s.messungenHinzufuegen(map.getVieleMessungen(s.getSensorId()));
+        }
     }
-    
-    private void sensorenAusSenseMapEinlesen()
+
+    private void basisinfosAusSenseMapEinlesen()
     {
         name = map.nameEinlesen();        
-        sensoren = map.sensorenEinlesen();
-        temperaturSensor = sensoren.get(0);
-        luftfeuchteSensor = sensoren.get(1);
-        luftdruckSensor = sensoren.get(2);
+        messreihen = map.sensorenEinlesen();
     }
-     
+
     public void infosAusgeben()
     {
         System.out.println("********************************");
         System.out.println("Sensebox: " + name);
         System.out.println("Sensoren: " );
-        System.out.println(" - " + temperaturSensor.toString());
-        System.out.println(" - " + luftfeuchteSensor.toString());
-        System.out.println(" - " + luftdruckSensor.toString());
+        for (Messreihe s:messreihen)
+        {
+            System.out.println(" - " + s.toString());
+        }
         System.out.println("********************************");
         System.out.println();
     }
-    
+
     public void aktuelleWerteAusgeben()
     {
         System.out.println("----- Aktuelle Werte ------");
-        System.out.println("Temperatur: " + aktTemp.getWert() + " " + aktTemp.getErzeugtAm());
-        System.out.println("Luftfeuchte: " + aktLuftfeuchte.getWert());
-        System.out.println("Luftdruck: " + aktLuftdruck.getWert());
+        for (Messreihe r : messreihen)
+        {
+            System.out.println(r.getTitel() + " \t" + r.getAktWert());
+        }
         System.out.println("---------------------------");      
         System.out.println();
     }
-    
+
     public void auswertungenAusgeben()
     {
         System.out.println("------- Auswertungen -------");
-        System.out.println("Maximale Temperatur: " + temperaturen.max());
-        System.out.println("Minimale Temperatur: " + temperaturen.min());
+        for(Messreihe r: messreihen)
+        {
+            System.out.println(r.getTitel());                  
+            System.out.println( "Max: " + r.getMaxWert());
+            System.out.println( "Min: " + r.getMinWert());
+            System.out.println();
+
+        }
         System.out.println("---------------------------");       
         System.out.println();
     }
-    
-    public void messreiheAusgeben()
-    {
-        System.out.println("----- Temperaturen der letzten Zeit ------ ");
-        temperaturen.ausgeben();
-        System.out.println();
-    }
-    
-    
-     
+
 }
-
     
-    
-    
-

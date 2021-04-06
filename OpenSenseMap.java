@@ -14,12 +14,15 @@ import org.json.*;
 public class OpenSenseMap implements SenseMap
 {
     private JSONObject boxDaten;
-    private String senseBoxId = "5d8de1a95f3de0001a86f3fb";
+   // private String senseBoxId = "5d8de1a95f3de0001a86f3fb"; //Karlsfeld
+    private String senseBoxId = "5c23af9c919bf8001a38c30d";   // Moosach
+    
     private String API_URL = "https://api.opensensemap.org/";
     
-    public OpenSenseMap()
+    public OpenSenseMap(String senseBoxId_)
     {
         boxDaten = holeSenseBoxDaten();
+        senseBoxId = senseBoxId_;
     }
     
     public String nameEinlesen()
@@ -27,20 +30,27 @@ public class OpenSenseMap implements SenseMap
         return boxDaten.getString("name");
     }
     
-    public ArrayList<Sensor> sensorenEinlesen()
+    public ArrayList<Messreihe> sensorenEinlesen()
     {
         JSONArray sensorenJSON = boxDaten.getJSONArray("sensors");
-        ArrayList<Sensor> liste = new ArrayList<Sensor>();
+        ArrayList<Messreihe> liste = new ArrayList<Messreihe>();
+        
+        // Maximal 3 Sensoren
+        int anzahl = sensorenJSON.length();
+        if (anzahl > 3)
+        {
+            anzahl = 3;
+        }
 
-        for (int i = 0; i < sensorenJSON.length(); i++)
+        for (int i = 0; i < anzahl; i++)
         {
             
             JSONObject sensorJSON = sensorenJSON.getJSONObject(i);
             String title = sensorJSON.getString("title");
             String id = sensorJSON.getString("_id");
             String einheit = sensorJSON.getString("unit");
-            Sensor sensor = new Sensor(id, title, einheit);
-            liste.add(sensor);
+            Messreihe messreihe = new Messreihe(id, title, einheit);
+            liste.add(messreihe);
         }
         return liste;
     }
