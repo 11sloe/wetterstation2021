@@ -1,20 +1,12 @@
 
 import java.util.ArrayList;
 
-/**
- * Die Klasse beschreibt eine Messstation
- * 
- * @author sloe
- * @version 1.0
- */
 public class Messstation
 {
-
-    private String name;
     private SenseMap map;  
-
+    
+    private String name;
     private ArrayList<Messreihe> messreihen;
-
 
     public Messstation(String senseBoxId)
     {
@@ -56,45 +48,16 @@ public class Messstation
         name = map.nameEinlesen();        
         messreihen = map.sensorenEinlesen();
     }
-
-    public void infosAusgeben()
+  
+    public String getName()
     {
-        System.out.println("********************************");
-        System.out.println("Sensebox: " + name);
-        System.out.println("Sensoren: " );
-        for (Messreihe s:messreihen)
-        {
-            System.out.println(" - " + s.toString());
-        }
-        System.out.println("********************************");
-        System.out.println();
+        return name;
     }
-
-    public void aktuelleWerteAusgeben()
+    
+    public ArrayList<Messreihe> getMessreihen()
     {
-        System.out.println("----- Aktuelle Werte ------");
-        for (Messreihe r : messreihen)
-        {
-            System.out.println(r.getTitel() + " \t" + r.getAktWert());
-        }
-        System.out.println("---------------------------");      
-        System.out.println();
-    }
-
-    public void auswertungenAusgeben()
-    {
-        System.out.println("------- Auswertungen -------");
-        for(Messreihe r: messreihen)
-        {
-            System.out.println(r.getTitel());                  
-            System.out.println( "Max: " + r.getMaxWert());
-            System.out.println( "Min: " + r.getMinWert());
-            System.out.println();
-
-        }
-        System.out.println("---------------------------");       
-        System.out.println();
+        return messreihen;
     }
 
 }
-    
+
