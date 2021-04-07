@@ -22,7 +22,7 @@ public class Messstation
         // Daten Einlesen
         basisinfosAusSenseMapEinlesen();
         messreihenEinlesen();
-        aktuelleMesswerteEinlesen();   
+       // aktuelleMesswerteEinlesen();   
 
     }
 

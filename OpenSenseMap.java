@@ -14,15 +14,16 @@ import org.json.*;
 public class OpenSenseMap implements SenseMap
 {
     private JSONObject boxDaten;
-   // private String senseBoxId = "5d8de1a95f3de0001a86f3fb"; //Karlsfeld
-    private String senseBoxId = "5c23af9c919bf8001a38c30d";   // Moosach
+    private String senseBoxId; 
+   
     
     private String API_URL = "https://api.opensensemap.org/";
     
     public OpenSenseMap(String senseBoxId_)
     {
-        boxDaten = holeSenseBoxDaten();
         senseBoxId = senseBoxId_;
+        boxDaten = holeSenseBoxDaten();
+        
     }
     
     public String nameEinlesen()
@@ -35,11 +36,11 @@ public class OpenSenseMap implements SenseMap
         JSONArray sensorenJSON = boxDaten.getJSONArray("sensors");
         ArrayList<Messreihe> liste = new ArrayList<Messreihe>();
         
-        // Maximal 3 Sensoren
+        int maxAnzahl = 8;
         int anzahl = sensorenJSON.length();
-        if (anzahl > 3)
+        if (anzahl > 8)
         {
-            anzahl = 3;
+            anzahl = 8;
         }
 
         for (int i = 0; i < anzahl; i++)
