@@ -1,9 +1,3 @@
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-
 import java.util.*;
 
 import org.json.*;
@@ -15,50 +9,53 @@ public class OpenSenseMap implements SenseMap
 {
     private JSONObject boxDaten;
     private String senseBoxId; 
-   
-    
+
     private String API_URL = "https://api.opensensemap.org/";
-    
     public OpenSenseMap(String senseBoxId_)
     {
         senseBoxId = senseBoxId_;
-        boxDaten = holeSenseBoxDaten();
-        
+        boxDaten = holeSenseBoxDaten();       
     }
-    
+
     public String nameEinlesen()
     {
-        return boxDaten.getString("name");
+        if (boxDaten != null)
+        {
+            return boxDaten.getString("name");
+        }
+        return "Keine Box gefunden";
     }
-    
+
     public ArrayList<Messreihe> sensorenEinlesen()
     {
-        JSONArray sensorenJSON = boxDaten.getJSONArray("sensors");
         ArrayList<Messreihe> liste = new ArrayList<Messreihe>();
-        
-        int maxAnzahl = 8;
-        int anzahl = sensorenJSON.length();
-        if (anzahl > 8)
+        if (boxDaten != null)
         {
-            anzahl = 8;
-        }
+            JSONArray sensorenJSON = boxDaten.getJSONArray("sensors");
 
-        for (int i = 0; i < anzahl; i++)
-        {
-            
-            JSONObject sensorJSON = sensorenJSON.getJSONObject(i);
-            String title = sensorJSON.getString("title");
-            String id = sensorJSON.getString("_id");
-            String einheit = sensorJSON.getString("unit");
-            Messreihe messreihe = new Messreihe(id, title, einheit);
-            liste.add(messreihe);
+            int maxAnzahl = 8;
+            int anzahl = sensorenJSON.length();
+            if (anzahl > 8)
+            {
+                anzahl = 8;
+            }
+
+            for (int i = 0; i < anzahl; i++)
+            {
+                JSONObject sensorJSON = sensorenJSON.getJSONObject(i);
+                String title = sensorJSON.getString("title");
+                String id = sensorJSON.getString("_id");
+                String einheit = sensorJSON.getString("unit");
+                Messreihe messreihe = new Messreihe(id, title, einheit);
+                liste.add(messreihe);
+            }
         }
         return liste;
     }
-    
+
     public Messung getAktMessung(String sensorId)
     {
-        String sensorInfos = get("/boxes/" + senseBoxId+ "/sensors/" + sensorId);
+        String sensorInfos = HTTPAnfrage_Java8.get(API_URL,"/boxes/" + senseBoxId+ "/sensors/" + sensorId);
         JSONObject infosJSON = new JSONObject(sensorInfos);
         JSONObject letzteMessungJSON = infosJSON.getJSONObject("lastMeasurement");
         String wertS = letzteMessungJSON.getString("value");
@@ -67,13 +64,13 @@ public class OpenSenseMap implements SenseMap
         Messung messung = new Messung(wert,erzeugtAm);
         return messung;
     }
-    
+
     public ArrayList<Messung> getVieleMessungen(String sensorId)
     {
         ArrayList<Messung> liste = new ArrayList<Messung>();
-        String messungen = get("/boxes/" + senseBoxId + "/data/" + sensorId);
+        String messungen = HTTPAnfrage_Java8.get(API_URL,"/boxes/" + senseBoxId + "/data/" + sensorId);
         JSONArray messungenJSON = new JSONArray(messungen);
-        
+
         for (int i = 0; i < messungenJSON.length(); i++)
         {
             JSONObject messungJSON = messungenJSON.getJSONObject(i);
@@ -84,10 +81,10 @@ public class OpenSenseMap implements SenseMap
         }
         return liste;
     }
-    
+
     private JSONObject holeSenseBoxDaten()
     {
-        String senseBoxDatenJsonString = get("/boxes/"+senseBoxId);
+        String senseBoxDatenJsonString = HTTPAnfrage_Java8.get(API_URL,"/boxes/"+senseBoxId);
         JSONObject daten = null;
         if (senseBoxDatenJsonString != null) 
         {
@@ -95,28 +92,7 @@ public class OpenSenseMap implements SenseMap
         }
         return daten;
     }
-        
-    
-    private String get(String anfrage)
-    {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(API_URL + anfrage))
-            .GET() 
-            .build();
-        HttpResponse<String> response;    
-        try{
-            response = client.send(request,HttpResponse.BodyHandlers.ofString());
-            return response.body();
-            }
-        catch(Exception e)
-        {
-            System.out.println("Anfrage fehlgeschlagen");
-            return null;
-        }
-        
-    }
-    
+
    
-    
+   
 }
